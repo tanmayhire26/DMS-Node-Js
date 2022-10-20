@@ -1,0 +1,4 @@
+{
+	"db": "mongodb://localhost/docly",
+	"jwtPrivateKey": "12345"
+}
