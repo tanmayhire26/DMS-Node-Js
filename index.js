@@ -13,7 +13,7 @@ const logins = require("./routes/logins");
 const cors = require("cors");
 //db connection
 require("./db/conn");
-
+const { createAdmin } = require("./createAdmin");
 //use middlewares
 console.log("ok");
 app.use(express.json());
@@ -26,6 +26,7 @@ app.use("/api/docTypesFields", docTypesFields);
 app.use("/api/documents", documents);
 app.use("/api/logins", logins);
 
+createAdmin();
 app.get("/", async (req, res) => {
 	res.write(`welcome to the "docly" portal ! \n`);
 	res.write(

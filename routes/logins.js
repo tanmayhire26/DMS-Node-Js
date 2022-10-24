@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
 	if (!user) return res.status(400).send("invalid username or password");
 
 	const isValid = await bcrypt.compare(req.body.password, user.password);
-	if (!isValid) return res.status(400).send("invalid email or password");
+	if (!isValid) return res.status(400).send("invalid username or password");
 	//res.send(isValid);
 	// const token = jwt.sign(
 	// 	{ _id: user._id, isAdmin: user.isAdmin },
@@ -23,8 +23,8 @@ router.post("/", async (req, res) => {
 	const token = await user.generateAuthToken();
 
 	console.log(token);
-	user.lastLoggedIn = new Date();
-	user.isActive=true;
+	user.lastLoggedIn = Date.now();
+	user.isActive = true;
 	await user.save();
 	res.send(token);
 });

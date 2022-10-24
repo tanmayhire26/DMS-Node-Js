@@ -26,6 +26,7 @@ router.post("/", async (req, res) => {
 		password: req.body.password,
 		phone: req.body.phone,
 		departments: req.body.departments,
+		role:req.body.role,
 		//role: req.body.role,
 		// lastLoggedIn: req.body.lastLoggedIn,
 
