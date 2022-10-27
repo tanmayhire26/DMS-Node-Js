@@ -9,7 +9,7 @@ const {
 
 router.use(express.json());
 
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
 	const departments = await Department.find();
 	res.send(departments);
 });

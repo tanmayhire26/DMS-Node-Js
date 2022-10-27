@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 
 	console.log(token);
 	user.lastLoggedIn = Date.now();
-	user.isActive = true;
+	// user.isActive = true;
 	await user.save();
 	res.send(token);
 });
