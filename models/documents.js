@@ -12,7 +12,7 @@ const documentSchema = new mongoose.Schema({
 		required: true,
 	},
 	indexingInfo: {
-		type: [Object],
+		type: Object,
 		required: true,
 	},
 	dcn: {
@@ -34,10 +34,11 @@ function validateDocuments(document) {
 	const schema = Joi.object({
 		name: Joi.string().required(),
 		path: Joi.string().required(),
-		indexingInfo: Joi.array().required(),
+		indexingInfo: Joi.object().required(),
 		dcn: Joi.string().min(13).max(20),
 		date: Joi.date(),
-		fieldInput:Joi.array(),
+		//fieldInput:Joi.array(),
+		depcode: Joi.string().required(),
 	});
 	return schema.validate(document);
 }

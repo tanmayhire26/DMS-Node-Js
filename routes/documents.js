@@ -11,6 +11,9 @@ const { date } = require("joi");
 const { DocTypesField } = require("../models/docTypesFields");
 const { DocType } = require("../models/doctypes");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 router.use(express.json());
 
 router.get("/", async (req, res) => {
@@ -26,26 +29,27 @@ router.get("/:id", async (req, res) => {
 	res.send(document);
 });
 
-router.post("/", auth, async (req, res) => {
-	let indexingInfoArr = req.body.indexingInfo.map((iInfo, index) => {
-		let demo = {};
-		demo[iInfo] = req.body.fieldInput[index];
-		return demo;
-	});
+router.post("/", auth,upload.single("image"), async (req, res) => {
+	// let indexingInfoArr = req.body.indexingInfo.map((iInfo, index) => {
+	// 	let demo = {};
+	// 	demo[iInfo] = req.body.fieldInput[index];
+	// 	return demo;
+	// });
 
-	
-	const doctypeField = await DocTypesField.findById(req.body.indexingInfo[0]);
+	// const doctypeField = await DocTypesField.findById(req.body.indexingInfo[0]);
 
-	//indexingInfoObj[`${req.body.indexingInfo}`] = req.body.fieldInput[0];
+	// //indexingInfoObj[`${req.body.indexingInfo}`] = req.body.fieldInput[0];
 
-	const doctype = await DocType.findById(doctypeField.docType);
-	const department = await Department.findOne({ name: doctype.department });
-	const departmentcode = department.departmentCode;
+	// const doctype = await DocType.findById(doctypeField.docType);
+	// const department = await Department.findOne({ name: doctype.department });
+	// const departmentcode = department.departmentCode;
+	const departmentcode = req.body.depcode;
 
 	const document = new Document({
 		name: req.body.name,
 		path: req.body.path,
-		indexingInfo: indexingInfoArr,
+		//indexingInfo: indexingInfoArr,
+		indexingInfo: req.body.indexingInfo,
 		dcn: generateDCN(departmentcode),
 		date: Date.now(),
 	});
@@ -88,7 +92,7 @@ router.delete("/:id", auth, async (req, res) => {
 
 	await document.delete();
 	await document.save();
-	res.send(document);
+	res.send(document, req.file);
 });
 
 module.exports = router;
