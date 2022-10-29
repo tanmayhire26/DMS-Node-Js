@@ -29,7 +29,7 @@ router.get("/:id", async (req, res) => {
 	res.send(document);
 });
 
-router.post("/", auth,upload.single("image"), async (req, res) => {
+router.post("/", auth, upload.single("image"), async (req, res) => {
 	// let indexingInfoArr = req.body.indexingInfo.map((iInfo, index) => {
 	// 	let demo = {};
 	// 	demo[iInfo] = req.body.fieldInput[index];
@@ -52,6 +52,8 @@ router.post("/", auth,upload.single("image"), async (req, res) => {
 		indexingInfo: req.body.indexingInfo,
 		dcn: generateDCN(departmentcode),
 		date: Date.now(),
+		doctype: req.body.doctype,
+		department: req.body.department,
 	});
 	function getJulianDate() {
 		// convert a Gregorian Date to a Julian number.

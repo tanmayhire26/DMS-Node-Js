@@ -26,6 +26,14 @@ const documentSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now(),
 	},
+	doctype: {
+		type: String,
+		required: true,
+	},
+	department: {
+		type: String,
+		required: true,
+	},
 });
 
 const Document = mongoose.model("Document", documentSchema);
@@ -39,6 +47,8 @@ function validateDocuments(document) {
 		date: Joi.date(),
 		//fieldInput:Joi.array(),
 		depcode: Joi.string().required(),
+		doctype: Joi.string().required(),
+		department: Joi.string().required(),
 	});
 	return schema.validate(document);
 }
