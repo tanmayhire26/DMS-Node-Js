@@ -71,6 +71,7 @@ userSchema.methods.generateAuthToken = function () {
 			role: this.role,
 			userName: this.userName,
 			isActive: this.isActive,
+			departments: this.departments,
 		},
 		config.get("jwtPrivateKey")
 	);

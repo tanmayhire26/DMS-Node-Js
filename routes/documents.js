@@ -23,6 +23,36 @@ router.get("/", async (req, res) => {
 	res.send(documents);
 });
 
+router.post("/filteredForUser", async (req, res) => {
+	let filteredDocumentsArr = [];
+	const userDepartmentIdsArr = req.body.departments;
+	let userDepartmentNamesArr = [];
+	for (let i = 0; i < userDepartmentIdsArr.length; i++) {
+		let department = await Department.findById(userDepartmentIdsArr[i]);
+		let departmentName = department.name;
+		userDepartmentNamesArr.push(departmentName);
+	}
+
+	// for (let j = 0; j < userDepartmentNamesArr.length; j++) {
+	// 	filteredDocumentsArr.push(
+	// 		await Document.find({ department: userDepartmentNamesArr[j] })
+	// 	);
+	// }
+	for (let j = 0; j < userDepartmentNamesArr.length; j++) {
+		const documents = await Document.find({
+			department: userDepartmentNamesArr[j],
+		});
+		if (documents.length !== 0) {
+			documents.forEach((department) => {
+				filteredDocumentsArr.push(department);
+			});
+		}
+	}
+
+	console.log(filteredDocumentsArr);
+	res.send(filteredDocumentsArr);
+});
+
 router.get("/:id", async (req, res) => {
 	const document = await Document.findById(req.params.id);
 	if (!document) return res.status(404).send("invaid id");
@@ -89,12 +119,10 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
 	res.send(document);
 });
 router.delete("/:id", auth, async (req, res) => {
-	const document = await Document.findById(req.params.id);
+	const document = await Document.findByIdAndDelete(req.params.id);
 	if (!document) return res.status(404).send("invalid id");
 
-	await document.delete();
-	await document.save();
-	res.send(document, req.file);
+	res.send(document);
 });
 
 module.exports = router;
