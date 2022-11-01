@@ -14,6 +14,8 @@ router.post("/", async (req, res) => {
 
 	const isValid = await bcrypt.compare(req.body.password, user.password);
 	if (!isValid) return res.status(400).send("invalid username or password");
+
+	// if (user.isActive === false) return res.send(400).send("user is not active");
 	//res.send(isValid);
 	// const token = jwt.sign(
 	// 	{ _id: user._id, isAdmin: user.isAdmin },

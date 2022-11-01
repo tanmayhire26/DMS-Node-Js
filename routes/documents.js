@@ -12,7 +12,28 @@ const { DocTypesField } = require("../models/docTypesFields");
 const { DocType } = require("../models/doctypes");
 
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+// const imageStorage = multer.diskStorage({
+// 	// Destination to store image
+// 	destination: "Uploads",
+// 	filename: (req, file, cb) => {
+// 		cb(
+// 			null,
+// 			file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+// 		);
+// 	},
+// });
+// const imageUpload = multer({
+// 	storage: imageStorage,
+// 	limits: {
+// 		fileSize: 1000000,
+// 	},
+// 	fileFilter(req, file, cb) {
+// 		if (!file.originalname.match(/\.(png|jpg)$/)) {
+// 			return cb(new Error("Please upload a Image"));
+// 		}
+// 		cb(undefined, true);
+// 	},
+// });
 
 router.use(express.json());
 
@@ -22,6 +43,19 @@ router.get("/", async (req, res) => {
 	if (documents.length === 0) return res.status(400).send("No document found");
 	res.send(documents);
 });
+
+// router.post("/upload/", imageUpload.single("image"), async (req, res) => {
+// 	try {
+// 		// const file = {
+// 		// 	data: req.file.buffer,
+// 		// 	filename: req.file.originalname,
+// 		// 	mimetype: req.file.mimetype,
+// 		// };
+// 		return res.send("image saved succesfully");
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// });
 
 router.post("/filteredForUser", async (req, res) => {
 	let filteredDocumentsArr = [];
@@ -59,7 +93,7 @@ router.get("/:id", async (req, res) => {
 	res.send(document);
 });
 
-router.post("/", auth, upload.single("image"), async (req, res) => {
+router.post("/", auth, async (req, res) => {
 	// let indexingInfoArr = req.body.indexingInfo.map((iInfo, index) => {
 	// 	let demo = {};
 	// 	demo[iInfo] = req.body.fieldInput[index];
@@ -118,7 +152,8 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
 	await document.save();
 	res.send(document);
 });
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", async (req, res) => {
+	console.log("welcome here");
 	const document = await Document.findByIdAndDelete(req.params.id);
 	if (!document) return res.status(404).send("invalid id");
 
