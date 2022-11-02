@@ -83,8 +83,6 @@ router.post("/filteredForUser", async (req, res) => {
 	//-----------------------FILTER------------------------------
 	const departmentFilter = req.body.departmentFilter;
 	const doctypeFilter = req.body.doctypeFilter;
-	console.log("Doc type filter00000000000000000000000", doctypeFilter);
-	// let furtherFilteredDocuments = filteredDocumentsArr;
 	let furtherFilteredDocuments = [];
 	let filteredByDepDocs = [];
 	if (departmentFilter) {
