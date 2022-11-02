@@ -67,26 +67,67 @@ router.post("/filteredForUser", async (req, res) => {
 		userDepartmentNamesArr.push(departmentName);
 	}
 
-	// for (let j = 0; j < userDepartmentNamesArr.length; j++) {
-	// 	filteredDocumentsArr.push(
-	// 		await Document.find({ department: userDepartmentNamesArr[j] })
-	// 	);
-	// }
-	for (let j = 0; j < userDepartmentNamesArr.length; j++) {
-		const documents = await Document.find({
-			department: userDepartmentNamesArr[j],
-		});
-		if (documents.length !== 0) {
-			documents.forEach((department) => {
-				filteredDocumentsArr.push(department);
+	if (userDepartmentNamesArr) {
+		for (let j = 0; j < userDepartmentNamesArr.length; j++) {
+			const documents = await Document.find({
+				department: userDepartmentNamesArr[j],
 			});
+			if (documents.length !== 0) {
+				documents.forEach((department) => {
+					filteredDocumentsArr.push(department);
+				});
+			}
 		}
 	}
 
-	console.log(filteredDocumentsArr);
-	res.send(filteredDocumentsArr);
-});
+	//-----------------------FILTER------------------------------
+	const departmentFilter = req.body.departmentFilter;
+	const doctypeFilter = req.body.doctypeFilter;
+	console.log("Doc type filter00000000000000000000000", doctypeFilter);
+	// let furtherFilteredDocuments = filteredDocumentsArr;
+	let furtherFilteredDocuments = [];
+	let filteredByDepDocs = [];
+	if (departmentFilter) {
+		filteredByDepDocs = filteredDocumentsArr.filter(
+			(fd) => fd.department === departmentFilter
+		);
+	}
+	console.log("Filtered by department", filteredByDepDocs);
+	console.log("Doc type filter ", doctypeFilter);
+	if (doctypeFilter) {
+		furtherFilteredDocuments = filteredByDepDocs.filter(
+			(fd) => fd.doctype === doctypeFilter
+		);
+	}
+	console.log(
+		"Filtered by department and then by doc type",
+		furtherFilteredDocuments
+	);
 
+	// if (furtherFilteredDocuments.length !== 0)
+	// 	return res.send(furtherFilteredDocuments);
+
+	//-----------------------Search Query---------------------------------------------------------------------------------------------
+	let searchQuery = req.body.searchQuery;
+	//let searchQuery = "Fa";
+	let doctypefieldId = req.body.doctypefieldReq;
+	//let doctypefieldId = "635f89cb38638c7df3070618";
+	let searchedFilteredDocuments = [];
+
+	if (searchQuery) {
+		let query = new RegExp(`^${searchQuery}`, "i");
+		console.log("In Search Query");
+		console.log("furtherFilteredDocuments", furtherFilteredDocuments);
+		furtherFilteredDocuments.forEach((ffd) => {
+			if (ffd.indexingInfo[`${doctypefieldId._id}`].match(query)) {
+				searchedFilteredDocuments.push(ffd);
+			}
+		});
+	}
+
+	return res.send(searchedFilteredDocuments);
+});
+//--------------------------------------------------------------------------------------------------------------------------------
 router.get("/:id", async (req, res) => {
 	const document = await Document.findById(req.params.id);
 	if (!document) return res.status(404).send("invaid id");

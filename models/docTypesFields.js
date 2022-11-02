@@ -4,6 +4,7 @@ const Joi = require("joi");
 const docTypesFieldSchema = new mongoose.Schema({
 	docType: mongoose.Types.ObjectId,
 	field: mongoose.Types.ObjectId,
+	fieldObj: Object,
 	isRequired: {
 		type: Boolean,
 		required: true,
@@ -17,7 +18,6 @@ function validateDocTypesFields(docTypesField) {
 		docType: Joi.string().required(),
 		field: Joi.string().required(),
 		isRequired: Joi.boolean().required(),
-        
 	});
 	return schema.validate(docTypesField);
 }

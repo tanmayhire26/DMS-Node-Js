@@ -27,6 +27,7 @@ router.post("/", async (req, res) => {
 	const docTypesField = new DocTypesField({
 		docType: req.body.docType,
 		field: req.body.field,
+		//fieldObj:await Field.find({"name.name":req.body.field})
 		isRequired: req.body.isRequired,
 	});
 	await docTypesField.save();
