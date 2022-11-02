@@ -88,46 +88,42 @@ router.post("/filteredForUser", async (req, res) => {
 	let furtherFilteredDocuments = [];
 	let filteredByDepDocs = [];
 	if (departmentFilter) {
+		if (departmentFilter === "All") return res.send(filteredDocumentsArr);
 		filteredByDepDocs = filteredDocumentsArr.filter(
 			(fd) => fd.department === departmentFilter
 		);
+	} else {
+		return res.send(filteredDocumentsArr);
 	}
-	console.log("Filtered by department", filteredByDepDocs);
-	console.log("Doc type filter ", doctypeFilter);
 	if (doctypeFilter) {
 		furtherFilteredDocuments = filteredByDepDocs.filter(
 			(fd) => fd.doctype === doctypeFilter
 		);
+	} else {
+		return res.send(filteredByDepDocs);
 	}
-	console.log(
-		"Filtered by department and then by doc type",
-		furtherFilteredDocuments
-	);
-
-	// if (furtherFilteredDocuments.length !== 0)
-	// 	return res.send(furtherFilteredDocuments);
 
 	//-----------------------Search Query---------------------------------------------------------------------------------------------
 	let searchQuery = req.body.searchQuery;
-	//let searchQuery = "Fa";
 	let doctypefieldId = req.body.doctypefieldReq;
-	//let doctypefieldId = "635f89cb38638c7df3070618";
 	let searchedFilteredDocuments = [];
 
 	if (searchQuery) {
 		let query = new RegExp(`^${searchQuery}`, "i");
-		console.log("In Search Query");
-		console.log("furtherFilteredDocuments", furtherFilteredDocuments);
 		furtherFilteredDocuments.forEach((ffd) => {
 			if (ffd.indexingInfo[`${doctypefieldId._id}`].match(query)) {
 				searchedFilteredDocuments.push(ffd);
 			}
 		});
+	} else {
+		return res.send(furtherFilteredDocuments);
 	}
 
 	return res.send(searchedFilteredDocuments);
 });
+
 //--------------------------------------------------------------------------------------------------------------------------------
+
 router.get("/:id", async (req, res) => {
 	const document = await Document.findById(req.params.id);
 	if (!document) return res.status(404).send("invaid id");
