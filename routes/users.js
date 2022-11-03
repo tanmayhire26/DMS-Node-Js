@@ -10,6 +10,45 @@ router.get("/", async (req, res) => {
 	if (!users) return res.status(404).send("No user registered yet!");
 	res.send(users);
 });
+
+router.post("/filtered", async (req, res) => {
+	const allUsers = await User.find();
+	const role = req.body.role;
+	const searchQuery = req.body.searchQuery;
+	const departmentsArr = req.body.departmentsArr;
+	let usersOfDepartments = [];
+	//-------------trial of multiple options to filter from------
+
+	// for (let i = 0; i < allUsers.length; i++) {
+	// 	let tempDepobj = [];
+	// 	for (let j = 0; j < allUsers[i].departments.length; j++) {
+	// 		let tempDep = allUsers[i].departments;
+	// 		let tempDepR = departmentsArr?.filter((d) => d === tempDep[j].name);
+	// 		if (tempDepR.length !== 0) {
+	// 			tempDepobj.push(tempDepR);
+	// 		}
+	// 	}
+	// 	if (tempDepobj.length !== 0) {
+	// 		usersOfDepartments.push(allUsers[i]);
+	// 	}
+	// }
+
+	// if (departmentsArr.length !== 0) return res.send(usersOfDepartments);
+	//---------------------------------------------------------------------------------
+	let query = new RegExp(`^${searchQuery}`, "i");
+	let users = [];
+
+	if (role === "All") {
+		users = await User.find({ userName: query }).sort({
+			userName: 1,
+		});
+		return res.send(users);
+	}
+	users = await User.find({ role: role, userName: query }).sort({
+		userName: 1,
+	});
+	res.send(users);
+});
 router.get("/:id", async (req, res) => {
 	const user = await User.findById(req.params.id);
 	if (!user) return res.status(500).send("user with this id doesn't exist");

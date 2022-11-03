@@ -14,6 +14,16 @@ router.get("/", async (req, res) => {
 	res.send(departments);
 });
 
+//------------------------------------------GET Filtered Department----------------------------------------
+
+router.post("/filtered", async (req, res) => {
+	const searchQuery = req.body.searchQuery;
+	let query = new RegExp(`^${searchQuery}`, "i");
+
+	const departments = await Department.sort({ name: 1 }).find({ name: query });
+	res.status(200).send(departments);
+});
+//-------------------------------------------------------------------------------------------------------------------
 router.get("/:id", async (req, res) => {
 	const department = await Department.findById(req.params.id);
 	if (!department) return res.status(404).send("invalid id");
