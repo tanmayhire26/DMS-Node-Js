@@ -13,6 +13,21 @@ router.get("/", async (req, res) => {
 	const docTypes = await DocType.find();
 	res.send(docTypes);
 });
+
+//------------------------------------------Get Filtered Doctypes API------------------------------------------------------------
+router.post("/filtered", async (req, res) => {
+	const nameSearchQuery = req.body.nameSearchQuery;
+	let doctypes = await DocType.find();
+	let query = "";
+	if (nameSearchQuery) {
+		query = new RegExp(`^${nameSearchQuery}`, "i");
+		doctypes = await DocType.find({ name: query });
+	}
+
+	res.send(doctypes);
+});
+
+//-------------------------------------------------------------------------------------------------------------------------------
 router.get("/:id", async (req, res) => {
 	const docType = await DocType.findById(req.params.id);
 	if (!docType)

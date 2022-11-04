@@ -20,7 +20,7 @@ router.post("/filtered", async (req, res) => {
 	const searchQuery = req.body.searchQuery;
 	let query = new RegExp(`^${searchQuery}`, "i");
 
-	const departments = await Department.sort({ name: 1 }).find({ name: query });
+	const departments = await Department.find({ name: query }).sort({ name: 1 });
 	res.status(200).send(departments);
 });
 //-------------------------------------------------------------------------------------------------------------------

@@ -15,25 +15,41 @@ router.post("/filtered", async (req, res) => {
 	const allUsers = await User.find();
 	const role = req.body.role;
 	const searchQuery = req.body.searchQuery;
-	const departmentsArr = req.body.departmentsArr;
+	const departmentsArr = req.body.departmentsArr; //Array of objects
 	let usersOfDepartments = [];
 	//-------------trial of multiple options to filter from------
+	// if (departmentsArr) {
+	// 	for (let i = 0; i < allUsers.length; i++) {
+	// 		let userDeps = allUsers[i].departments;
+	// 		let counter = 0;
 
-	// for (let i = 0; i < allUsers.length; i++) {
-	// 	let tempDepobj = [];
-	// 	for (let j = 0; j < allUsers[i].departments.length; j++) {
-	// 		let tempDep = allUsers[i].departments;
-	// 		let tempDepR = departmentsArr?.filter((d) => d === tempDep[j].name);
-	// 		if (tempDepR.length !== 0) {
-	// 			tempDepobj.push(tempDepR);
-	// 		}
-	// 	}
-	// 	if (tempDepobj.length !== 0) {
-	// 		usersOfDepartments.push(allUsers[i]);
+	// 		userDeps.forEach((ud) => {
+	// 			let depMatch = departmentsArr.filter((d) => d._id === ud);
+	// 			if (depMatch.length !== 0) counter ++;
+	// 		});
+	// 		console.log(counter);
+	// 		if (counter !== 0) usersOfDepartments.push(allUsers[i]);
 	// 	}
 	// }
+	// if (usersOfDepartments.length !== 0) {
+	// 	return res.send(usersOfDepartments);
+	// }
 
-	// if (departmentsArr.length !== 0) return res.send(usersOfDepartments);
+	//----------------------------Function for getting departments filter with search and filter by role : ------------------
+	function getFilteredByDep(fUsers) {
+		for (let i = 0; i < fUsers.length; i++) {
+			let userDeps = fUsers[i].departments;
+			let counter = 0;
+
+			userDeps.forEach((ud) => {
+				let depMatch = departmentsArr.filter((d) => d._id === ud);
+				if (depMatch.length !== 0) counter++;
+			});
+			console.log(counter);
+			if (counter !== 0) usersOfDepartments.push(fUsers[i]);
+		}
+	}
+
 	//---------------------------------------------------------------------------------
 	let query = new RegExp(`^${searchQuery}`, "i");
 	let users = [];
@@ -42,13 +58,25 @@ router.post("/filtered", async (req, res) => {
 		users = await User.find({ userName: query }).sort({
 			userName: 1,
 		});
+		if (departmentsArr) {
+			getFilteredByDep(allUsers);
+			return res.send(usersOfDepartments);
+		}
 		return res.send(users);
 	}
 	users = await User.find({ role: role, userName: query }).sort({
 		userName: 1,
 	});
+
+	if (departmentsArr) {
+		getFilteredByDep(users);
+		return res.send(usersOfDepartments);
+	}
+	
 	res.send(users);
 });
+
+//----------------------------------------------------------------------------------------------------------------------------------------
 router.get("/:id", async (req, res) => {
 	const user = await User.findById(req.params.id);
 	if (!user) return res.status(500).send("user with this id doesn't exist");
