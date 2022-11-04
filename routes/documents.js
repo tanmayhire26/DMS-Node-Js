@@ -10,6 +10,7 @@ const auth = require("../middlewares/auth");
 const { date } = require("joi");
 const { DocTypesField } = require("../models/docTypesFields");
 const { DocType } = require("../models/doctypes");
+const tanmay = require("../Upload/index");
 
 const multer = require("multer");
 // const imageStorage = multer.diskStorage({
@@ -129,19 +130,6 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
-	// let indexingInfoArr = req.body.indexingInfo.map((iInfo, index) => {
-	// 	let demo = {};
-	// 	demo[iInfo] = req.body.fieldInput[index];
-	// 	return demo;
-	// });
-
-	// const doctypeField = await DocTypesField.findById(req.body.indexingInfo[0]);
-
-	// //indexingInfoObj[`${req.body.indexingInfo}`] = req.body.fieldInput[0];
-
-	// const doctype = await DocType.findById(doctypeField.docType);
-	// const department = await Department.findOne({ name: doctype.department });
-	// const departmentcode = department.departmentCode;
 	const departmentcode = req.body.depcode;
 
 	const document = new Document({
@@ -154,6 +142,12 @@ router.post("/", auth, async (req, res) => {
 		doctype: req.body.doctype,
 		department: req.body.department,
 	});
+
+	const path = req.body.path;
+
+	if (path) {
+		tanmay("./Upload/images/" + path.slice(14));
+	}
 	function getJulianDate() {
 		// convert a Gregorian Date to a Julian number.
 
@@ -187,6 +181,18 @@ router.post("/", auth, async (req, res) => {
 	await document.save();
 	res.send(document);
 });
+//----------------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
+router.post("/preview", async (req, res) => {
+	const path = req.body.imageName;
+	if (path) {
+		tanmay("./Upload/images/" + path);
+	}
+	res.send();
+});
+
+//--------------------------------------------------------DELETE API------------------------------------------------------
 router.delete("/:id", async (req, res) => {
 	console.log("welcome here");
 	const document = await Document.findByIdAndDelete(req.params.id);

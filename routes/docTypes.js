@@ -17,11 +17,19 @@ router.get("/", async (req, res) => {
 //------------------------------------------Get Filtered Doctypes API------------------------------------------------------------
 router.post("/filtered", async (req, res) => {
 	const nameSearchQuery = req.body.nameSearchQuery;
+	const departmentFilter = req.body.departmentFilter;
 	let doctypes = await DocType.find();
 	let query = "";
 	if (nameSearchQuery) {
 		query = new RegExp(`^${nameSearchQuery}`, "i");
 		doctypes = await DocType.find({ name: query });
+	}
+	if (departmentFilter) {
+	query = new RegExp(`^${nameSearchQuery}`, "i");
+		doctypes = await DocType.find({
+			name: query,
+			department: departmentFilter,
+		});
 	}
 
 	res.send(doctypes);
