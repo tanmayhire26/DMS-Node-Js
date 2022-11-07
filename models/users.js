@@ -39,8 +39,11 @@ const userSchema = new mongoose.Schema({
 	},
 	role: {
 		type: String,
-		default: "General User",
 		required: true,
+	},
+	clearance: {
+		type: Boolean,
+		default: false,
 	},
 
 	//object id array here for departments
@@ -73,6 +76,7 @@ userSchema.methods.generateAuthToken = function () {
 			userName: this.userName,
 			isActive: this.isActive,
 			departments: this.departments,
+			clearance: this.clearance,
 		},
 		config.get("jwtPrivateKey")
 	);
@@ -95,6 +99,7 @@ function validateUsers(user) {
 		isActive: Joi.boolean(),
 		updatedBy: Joi.string(),
 		updatedAt: Joi.date(),
+		clearance: Joi.boolean(),
 	});
 	return schema.validate(user);
 }

@@ -10,6 +10,8 @@ const departments = require("./routes/departments");
 const docTypesFields = require("./routes/docTypesFields");
 const documents = require("./routes/documents");
 const logins = require("./routes/logins");
+const notify = require("./routes/notify");
+const uploadImages = require("./routes/uploadImage");
 const cors = require("cors");
 //db connection
 require("./db/conn");
@@ -25,7 +27,8 @@ app.use("/api/departments", departments);
 app.use("/api/docTypesFields", docTypesFields);
 app.use("/api/documents", documents);
 app.use("/api/logins", logins);
-
+app.use("/api/notify", notify);
+app.use("/api/uploadImages", uploadImages);
 createAdmin();
 app.get("/", async (req, res) => {
 	res.write(`welcome to the "docly" portal ! \n`);

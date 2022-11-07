@@ -13,6 +13,36 @@ router.get("/", async (req, res) => {
 	res.send(docTypesFields);
 });
 
+router.post("/filtered", async (req, res) => {
+	const departmentFilter = req.body.departmentFilter;
+	const doctypeFilter = req.body.doctypeFilter;
+	const fieldFilter = req.body.fieldFilter;
+	let doctypefields = await DocTypesField.find();
+	console.log("doc type filter : ", doctypeFilter);
+	console.log("field Filter:", fieldFilter);
+	if (doctypeFilter && doctypeFilter !== "Select Doctype") {
+		let reqDoctypefields = await DocTypesField.find({ docType: doctypeFilter });
+		if (reqDoctypefields) doctypefields = reqDoctypefields;
+	}
+	if (fieldFilter && doctypeFilter) {
+		console.log("in if conditin of fields in dtf");
+		let reqDoctypefields = await DocTypesField.find({
+			docType: doctypeFilter,
+			field: fieldFilter,
+		});
+		if (reqDoctypefields) doctypefields = reqDoctypefields;
+	}
+	if (fieldFilter && !doctypeFilter) {
+		console.log("in if conditin of fields in dtf");
+		let reqDoctypefields = await DocTypesField.find({
+			field: fieldFilter,
+		});
+		if (reqDoctypefields) doctypefields = reqDoctypefields;
+	} 
+
+	res.send(doctypefields);
+});
+
 router.get("/:id", async (req, res) => {
 	const docTypesField = await DocTypesField.findById(req.params.id);
 	if (!docTypesField) return res.status(404).send("invalid id");

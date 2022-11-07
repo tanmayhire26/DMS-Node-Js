@@ -9,6 +9,18 @@ router.get("/", async (req, res) => {
 	res.send(fields);
 });
 
+router.post("/filtered", async (req, res) => {
+	const nameSearchQuery = req.body.nameSearchQuery;
+	console.log(nameSearchQuery);
+	let query = "";
+	let fields = await Field.find();
+	if (nameSearchQuery) {
+		query = new RegExp(`^${nameSearchQuery}`, "i");
+		fields=fields.filter((f) => f.name.name.match(query));
+	}
+	res.send(fields);
+});
+
 router.get("/:id", async (req, res) => {
 	const field = await Field.findById(req.params.id);
 	if (!field) return res.status(404).send("field with givenid not found");

@@ -12,7 +12,6 @@ const { DocTypesField } = require("../models/docTypesFields");
 const { DocType } = require("../models/doctypes");
 const tanmay = require("../Upload/index");
 
-const multer = require("multer");
 // const imageStorage = multer.diskStorage({
 // 	// Destination to store image
 // 	destination: "Uploads",
@@ -35,7 +34,7 @@ const multer = require("multer");
 // 		cb(undefined, true);
 // 	},
 // });
-
+//--------------------------------------MUlter Trial-----------------------------------------------------
 router.use(express.json());
 
 router.get("/", async (req, res) => {
@@ -141,6 +140,7 @@ router.post("/", auth, async (req, res) => {
 		date: Date.now(),
 		doctype: req.body.doctype,
 		department: req.body.department,
+		sensitive: req.body.sensitive,
 	});
 
 	const path = req.body.path;
@@ -186,11 +186,14 @@ router.post("/", auth, async (req, res) => {
 //-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
 router.post("/preview", async (req, res) => {
 	const path = req.body.imageName;
+	console.log("Path%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", path);
 	if (path) {
 		tanmay("./Upload/images/" + path);
 	}
-	res.send();
+	res.send(path);
 });
+
+//--------------------------------------------------MULTER trial---------------------------------------------------------------------
 
 //--------------------------------------------------------DELETE API------------------------------------------------------
 router.delete("/:id", async (req, res) => {

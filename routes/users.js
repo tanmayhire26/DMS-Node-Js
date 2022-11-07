@@ -72,7 +72,7 @@ router.post("/filtered", async (req, res) => {
 		getFilteredByDep(users);
 		return res.send(usersOfDepartments);
 	}
-	
+
 	res.send(users);
 });
 
@@ -144,6 +144,20 @@ router.patch("/:id", auth, async (req, res) => {
 		return res.status(404).send("User with the given id was  not found");
 	user.isActive =
 		user.isActive === true ? (user.isActive = false) : (user.isActive = true);
+	user.updatedAt = Date.now();
+	user.updatedBy = "63523988acbce709805ae706";
+	await user.save();
+	res.send(user);
+});
+
+router.patch("/clear/:id", auth, async (req, res) => {
+	const user = await User.findById(req.params.id);
+	if (!user)
+		return res.status(404).send("User with the given id was  not found");
+	user.clearance =
+		user.clearance === true
+			? (user.clearance = false)
+			: (user.clearance = true);
 	user.updatedAt = Date.now();
 	user.updatedBy = "63523988acbce709805ae706";
 	await user.save();

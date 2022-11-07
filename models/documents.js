@@ -34,6 +34,10 @@ const documentSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	sensitive: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const Document = mongoose.model("Document", documentSchema);
@@ -49,6 +53,7 @@ function validateDocuments(document) {
 		depcode: Joi.string().required(),
 		doctype: Joi.string().required(),
 		department: Joi.string().required(),
+		sensitive: Joi.boolean(),
 	});
 	return schema.validate(document);
 }
