@@ -109,7 +109,7 @@ router.post("/filteredForUser", async (req, res) => {
 	if (searchQuery) {
 		let query = new RegExp(`^${searchQuery}`, "i");
 		furtherFilteredDocuments.forEach((ffd) => {
-			if (ffd.indexingInfo[`${doctypefieldId._id}`].match(query)) {
+			if (ffd.indexingInfo[`${doctypefieldId._id}`]?.match(query)) {
 				searchedFilteredDocuments.push(ffd);
 			}
 		});
