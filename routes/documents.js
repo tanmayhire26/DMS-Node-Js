@@ -186,7 +186,7 @@ router.post("/", auth, async (req, res) => {
 //-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
 router.post("/preview", async (req, res) => {
 	const path = req.body.imageName;
-	console.log("Path%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", path);
+	
 	if (path) {
 		tanmay("./Upload/images/" + path);
 	}
@@ -197,10 +197,20 @@ router.post("/preview", async (req, res) => {
 
 //--------------------------------------------------------DELETE API------------------------------------------------------
 router.delete("/:id", async (req, res) => {
-	console.log("welcome here");
 	const document = await Document.findByIdAndDelete(req.params.id);
 	if (!document) return res.status(404).send("invalid id");
 
+	res.send(document);
+});
+
+//------------------------------------Update indexing info---------------------------------------
+
+router.patch("/:id", async (req, res) => {
+	const document = await Document.findById(req.params.id);
+	if (!document) return res.status(404).send("not found");
+
+	document.indexingInfo = req.body.indexingInfo;
+	await document.save();
 	res.send(document);
 });
 
