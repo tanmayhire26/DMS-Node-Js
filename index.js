@@ -11,11 +11,13 @@ const docTypesFields = require("./routes/docTypesFields");
 const documents = require("./routes/documents");
 const logins = require("./routes/logins");
 const notify = require("./routes/notify");
+
 const uploadImages = require("./routes/uploadImage");
 const cors = require("cors");
 //db connection
 require("./db/conn");
 const { createAdmin } = require("./createAdmin");
+
 //use middlewares
 console.log("ok");
 app.use(express.json());

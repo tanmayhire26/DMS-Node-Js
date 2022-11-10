@@ -3,6 +3,9 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const auth = require("../middlewares/auth");
 const { User, userSchema, validateUsers } = require("../models/users");
+const { sendMail } = require("../emailBuilder");
+const { sendVerifyMail } = require("../emailBuilderVerify");
+const { Otp } = require("../models/otp");
 router.use(express.json());
 
 router.get("/", async (req, res) => {
@@ -82,6 +85,17 @@ router.get("/:id", async (req, res) => {
 	if (!user) return res.status(500).send("user with this id doesn't exist");
 	res.send(user);
 });
+//---------------------------------FORGOT PASSWORD - SEND LINK------------------------------------------------------
+
+router.post("/forgot", async (req, res) => {
+	const emailToReset = req.body.email;
+	const user = await User.find({ email: emailToReset });
+
+	sendMail(user, emailToReset);
+	res.send(user);
+});
+
+//-----------------------------------------------------------------------------------------
 router.post("/", async (req, res) => {
 	const { error } = validateUsers(req.body);
 	if (error) return res.status(400).send(error.details[0].message);
@@ -123,6 +137,7 @@ router.put("/:id", async (req, res) => {
 				phone: req.body.phone,
 				departments: req.body.departments,
 				role: req.body.role,
+
 				//role: req.body.role,
 				// lastLoggedIn: req.body.lastLoggedIn,
 
@@ -138,7 +153,7 @@ router.put("/:id", async (req, res) => {
 	res.send(user);
 });
 
-router.patch("/:id", auth, async (req, res) => {
+router.patch("/:id", async (req, res) => {
 	const user = await User.findById(req.params.id);
 	if (!user)
 		return res.status(404).send("User with the given id was  not found");
@@ -150,7 +165,7 @@ router.patch("/:id", auth, async (req, res) => {
 	res.send(user);
 });
 
-router.patch("/clear/:id", auth, async (req, res) => {
+router.patch("/clear/:id", async (req, res) => {
 	const user = await User.findById(req.params.id);
 	if (!user)
 		return res.status(404).send("User with the given id was  not found");
@@ -163,4 +178,46 @@ router.patch("/clear/:id", auth, async (req, res) => {
 	await user.save();
 	res.send(user);
 });
+
+//--------------------------------------Change User Password on resetPasssword-------------------------------
+
+router.patch("/changePassword/:id", async (req, res) => {
+	let user = await User.findById(req.body.userId);
+	if (!user) return res.status(404).send("User not found");
+	console.log(user);
+	const newPassword = req.body.newPassword;
+	if (newPassword) user.password = newPassword;
+	const salt = await bcrypt.genSalt(10);
+	user.password = await bcrypt.hash(req.body.newPassword, salt);
+	await user.save();
+	res.send(user);
+});
+
+//----------------------------------Send Otp to verify email id-----------------------------------------
+
+router.post("/sendOtp", async (req, res) => {
+	const otpG = req.body.otpG;
+	const email = req.body.email;
+	const user = await User.find({ email: email });
+	const otp = new Otp({ otp: otpG, userEmail: email });
+	await otp.save();
+
+	sendVerifyMail(user, email, otpG);
+	res.send(otp);
+});
+
+//------------------------------------Verify email id---------------------------------------------------------
+router.patch("/verify", async (req, res) => {
+	const email = req.body.email;
+	console.log(email);
+	const user = await User.findOne({ email: email });
+	console.log(user, "user whose veried is being path@@@@@@@@@@@@@@@@@@@@@");
+	if (!user) return res.status(404).send("User not found");
+	user.verified = true;
+	await user.save();
+	res.send("user");
+});
+
+//----------------------------------------------------------------------------------------------------------------
+
 module.exports = router;

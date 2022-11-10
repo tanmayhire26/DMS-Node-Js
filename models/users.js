@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
 
 		required: true,
 	},
+	verified: { type: Boolean, default: false },
 	phone: {
 		type: String,
 		minLength: 10,
@@ -73,10 +74,12 @@ userSchema.methods.generateAuthToken = function () {
 			_id: this._id,
 			role: this.role,
 			firstName: this.firstName,
+			email: this.email,
 			userName: this.userName,
 			isActive: this.isActive,
 			departments: this.departments,
 			clearance: this.clearance,
+			verified: this.verified,
 		},
 		config.get("jwtPrivateKey")
 	);
@@ -100,6 +103,7 @@ function validateUsers(user) {
 		updatedBy: Joi.string(),
 		updatedAt: Joi.date(),
 		clearance: Joi.boolean(),
+		verified: Joi.boolean(),
 	});
 	return schema.validate(user);
 }
