@@ -207,15 +207,14 @@ router.post("/sendOtp", async (req, res) => {
 });
 
 //------------------------------------Verify email id---------------------------------------------------------
-router.patch("/verify", async (req, res) => {
+router.patch("/verify/:id", async (req, res) => {
 	const email = req.body.email;
 	console.log(email);
 	const user = await User.findOne({ email: email });
-	console.log(user, "user whose veried is being path@@@@@@@@@@@@@@@@@@@@@");
 	if (!user) return res.status(404).send("User not found");
 	user.verified = true;
 	await user.save();
-	res.send("user");
+	res.send(user);
 });
 
 //----------------------------------------------------------------------------------------------------------------
