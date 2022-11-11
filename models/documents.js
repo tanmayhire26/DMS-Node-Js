@@ -38,6 +38,7 @@ const documentSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	tags: Array,
 });
 
 const Document = mongoose.model("Document", documentSchema);
@@ -54,6 +55,7 @@ function validateDocuments(document) {
 		doctype: Joi.string().required(),
 		department: Joi.string().required(),
 		sensitive: Joi.boolean(),
+		tags: Joi.array(),
 	});
 	return schema.validate(document);
 }

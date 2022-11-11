@@ -12,6 +12,9 @@ const documents = require("./routes/documents");
 const logins = require("./routes/logins");
 const notify = require("./routes/notify");
 
+const comments = require("./routes/customDocuments/comments");
+const tags = require("./routes/customDocuments/tags");
+const tagNames = require("./routes/customDocuments/tagNames");
 const uploadImages = require("./routes/uploadImage");
 const cors = require("cors");
 //db connection
@@ -31,12 +34,14 @@ app.use("/api/documents", documents);
 app.use("/api/logins", logins);
 app.use("/api/notify", notify);
 app.use("/api/uploadImages", uploadImages);
+app.use("/api/comments", comments);
+app.use("/api/tags", tags);
+app.use("/api/tagNames", tagNames);
 createAdmin();
+
 app.get("/", async (req, res) => {
 	res.write(`welcome to the "docly" portal ! \n`);
-	res.write(
-		"We help you generate, keep and share report cards of your students effectively."
-	);
+	res.write("We help you store,manage and retrieve documents efficiently");
 	res.send();
 });
 

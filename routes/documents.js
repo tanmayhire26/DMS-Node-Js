@@ -11,7 +11,10 @@ const { date } = require("joi");
 const { DocTypesField } = require("../models/docTypesFields");
 const { DocType } = require("../models/doctypes");
 const tanmay = require("../Upload/index");
+const { TagName } = require("../models/customDocuments/tagNames");
+const { Tag } = require("../models/customDocuments/tags");
 
+let currentUDs = [];
 // const imageStorage = multer.diskStorage({
 // 	// Destination to store image
 // 	destination: "Uploads",
@@ -80,6 +83,8 @@ router.post("/filteredForUser", async (req, res) => {
 		}
 	}
 
+	currentUDs = filteredDocumentsArr;
+
 	//-----------------------FILTER------------------------------
 	const departmentFilter = req.body.departmentFilter;
 	const doctypeFilter = req.body.doctypeFilter;
@@ -118,6 +123,23 @@ router.post("/filteredForUser", async (req, res) => {
 	}
 
 	return res.send(searchedFilteredDocuments);
+});
+
+//-------------------------------------Get Documents filtered by custom Tags------------------------------------------
+
+router.post("/filteredByTags", async (req, res) => {
+	const filterTag = req.body.filterTag;
+	const documents = currentUDs; //documents of departments of the logged in user
+	let documentsArr = [];
+	documents.forEach((d) => {
+		let docTags = d.tags;
+		let docwtag = docTags.find((dt) => dt.tag === filterTag.name);
+		if (docwtag) {
+			documentsArr.push(d);
+		}
+	});
+	console.log(documentsArr);
+	res.send(documentsArr);
 });
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +208,7 @@ router.post("/", auth, async (req, res) => {
 //-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
 router.post("/preview", async (req, res) => {
 	const path = req.body.imageName;
-	
+
 	if (path) {
 		tanmay("./Upload/images/" + path);
 	}
