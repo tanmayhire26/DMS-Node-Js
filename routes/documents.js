@@ -14,7 +14,7 @@ const tanmay = require("../Upload/index");
 const { TagName } = require("../models/customDocuments/tagNames");
 const { Tag } = require("../models/customDocuments/tags");
 
-let currentUDs = [];
+let currentUDs = []; //will store documents filtered according to the departments of the user logged in
 // const imageStorage = multer.diskStorage({
 // 	// Destination to store image
 // 	destination: "Uploads",
@@ -206,14 +206,14 @@ router.post("/", auth, async (req, res) => {
 //----------------------------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
-router.post("/preview", async (req, res) => {
-	const path = req.body.imageName;
+// router.post("/preview", async (req, res) => {
+// 	const path = req.body.imageName;
 
-	if (path) {
-		tanmay("./Upload/images/" + path);
-	}
-	res.send(path);
-});
+// 	if (path) {
+// 		tanmay("./Upload/images/" + path);
+// 	}
+// 	res.send(path);
+// });
 
 //--------------------------------------------------MULTER trial---------------------------------------------------------------------
 

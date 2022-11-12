@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
 	const tag = await Tag.findByIdAndDelete(req.params.id);
 	if (!tag) return res.status(404).send("tag not found for deleting");
+	
 
 	res.send(tag);
 });

@@ -16,6 +16,7 @@ const comments = require("./routes/customDocuments/comments");
 const tags = require("./routes/customDocuments/tags");
 const tagNames = require("./routes/customDocuments/tagNames");
 const uploadImages = require("./routes/uploadImage");
+const indexer = require("./routes/indexer");
 const cors = require("cors");
 //db connection
 require("./db/conn");
@@ -37,6 +38,7 @@ app.use("/api/uploadImages", uploadImages);
 app.use("/api/comments", comments);
 app.use("/api/tags", tags);
 app.use("/api/tagNames", tagNames);
+app.use("/api/indexer", indexer);
 createAdmin();
 
 app.get("/", async (req, res) => {
