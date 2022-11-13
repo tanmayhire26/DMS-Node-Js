@@ -4,6 +4,7 @@ const router = express.Router();
 
 //----------------------------------MULTER--------------------------------------------
 const multer = require("multer");
+const { Document } = require("../models/documents");
 // const storage = multer.diskStorage({
 // 	destination: "indexerImages/",
 // 	filename: function (req, file, cb) {
@@ -43,5 +44,18 @@ router.post("/", upload.single("image"), async (req, res) => {
 	await indexer.save();
 	res.send(indexer);
 });
+
+//--------------------------------Patch buffer to document.documentImage as data-----------------------------------------
+
+router.patch("/:id", upload.single("documentImage"), async (req, res) => {
+	const document = await Document.findById(req.params.id);
+
+	if (!document) return res.status(404).send("Document not found");
+	if (req.file) document.documentImage.data = req.file.buffer;
+	await document.save();
+	res.send(document);
+});
+
+//________________________________________________________________________________________________________________________
 
 module.exports = router;

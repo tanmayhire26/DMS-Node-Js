@@ -8,36 +8,21 @@ const { Department } = require("../models/departments");
 const router = express.Router();
 const auth = require("../middlewares/auth");
 const { date } = require("joi");
-const { DocTypesField } = require("../models/docTypesFields");
-const { DocType } = require("../models/doctypes");
 const tanmay = require("../Upload/index");
 const { TagName } = require("../models/customDocuments/tagNames");
 const { Tag } = require("../models/customDocuments/tags");
-
+const multer = require("multer");
 let currentUDs = []; //will store documents filtered according to the departments of the user logged in
-// const imageStorage = multer.diskStorage({
-// 	// Destination to store image
-// 	destination: "Uploads",
-// 	filename: (req, file, cb) => {
-// 		cb(
-// 			null,
-// 			file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-// 		);
-// 	},
-// });
-// const imageUpload = multer({
-// 	storage: imageStorage,
-// 	limits: {
-// 		fileSize: 1000000,
-// 	},
-// 	fileFilter(req, file, cb) {
-// 		if (!file.originalname.match(/\.(png|jpg)$/)) {
-// 			return cb(new Error("Please upload a Image"));
-// 		}
-// 		cb(undefined, true);
-// 	},
-// });
-//--------------------------------------MUlter Trial-----------------------------------------------------
+
+//----------------------------------------------multer-------------------------------------------
+const storage = multer.diskStorage({
+	destination: "documentImages/",
+	filename: function (req, file, cb) {
+		cb(null, file.originalname);
+	},
+});
+const upload = multer({ storage: storage });
+//--------------------------------------------------------------------------------------------------
 router.use(express.json());
 
 router.get("/", async (req, res) => {
@@ -46,19 +31,6 @@ router.get("/", async (req, res) => {
 	if (documents.length === 0) return res.status(400).send("No document found");
 	res.send(documents);
 });
-
-// router.post("/upload/", imageUpload.single("image"), async (req, res) => {
-// 	try {
-// 		// const file = {
-// 		// 	data: req.file.buffer,
-// 		// 	filename: req.file.originalname,
-// 		// 	mimetype: req.file.mimetype,
-// 		// };
-// 		return res.send("image saved succesfully");
-// 	} catch (error) {
-// 		console.log(error);
-// 	}
-// });
 
 router.post("/filteredForUser", async (req, res) => {
 	let filteredDocumentsArr = [];
@@ -150,12 +122,15 @@ router.get("/:id", async (req, res) => {
 	res.send(document);
 });
 
-router.post("/", auth, async (req, res) => {
+//-----------------------------ADD Document and upload image using multer and to cloudinary-------------
+
+router.post("/", upload.single("documentImage"), async (req, res) => {
 	const departmentcode = req.body.depcode;
 
 	const document = new Document({
 		name: req.body.name,
 		path: req.body.path,
+		documentImage: { filename: req.file.filename, mimetype: req.file.mimetype },
 		//indexingInfo: indexingInfoArr,
 		indexingInfo: req.body.indexingInfo,
 		dcn: generateDCN(departmentcode),
@@ -165,10 +140,10 @@ router.post("/", auth, async (req, res) => {
 		sensitive: req.body.sensitive,
 	});
 
-	const path = req.body.path;
-
+	const path = req.file.filename;
+	
 	if (path) {
-		tanmay("./Upload/images/" + path.slice(14));
+		tanmay("./documentImages/" + path);
 	}
 	function getJulianDate() {
 		// convert a Gregorian Date to a Julian number.
@@ -204,18 +179,6 @@ router.post("/", auth, async (req, res) => {
 	res.send(document);
 });
 //----------------------------------------------------------------------------------------------------------------------------
-
-//-------------------------------------------generate cloudinary image URL for open document form of add doc-----------------------------------------------------------
-// router.post("/preview", async (req, res) => {
-// 	const path = req.body.imageName;
-
-// 	if (path) {
-// 		tanmay("./Upload/images/" + path);
-// 	}
-// 	res.send(path);
-// });
-
-//--------------------------------------------------MULTER trial---------------------------------------------------------------------
 
 //--------------------------------------------------------DELETE API------------------------------------------------------
 router.delete("/:id", async (req, res) => {

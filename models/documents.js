@@ -11,6 +11,11 @@ const documentSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	documentImage: {
+		filename: String,
+		mimetype: String,
+		data: Buffer,
+	},
 	indexingInfo: {
 		type: Object,
 		required: true,
@@ -47,10 +52,10 @@ function validateDocuments(document) {
 	const schema = Joi.object({
 		name: Joi.string().required(),
 		path: Joi.string().required(),
+		documentImage: Joi.object(),
 		indexingInfo: Joi.object().required(),
 		dcn: Joi.string().min(13).max(20),
 		date: Joi.date(),
-		//fieldInput:Joi.array(),
 		depcode: Joi.string().required(),
 		doctype: Joi.string().required(),
 		department: Joi.string().required(),
