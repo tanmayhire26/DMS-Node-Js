@@ -37,7 +37,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 		lastName: req.body.lastName,
 		profileImage: {
 			filename: req.file.originalname,
-			mimetype: req.file.mimetype,
+			mimetype: req.file.mimetype,  
 			data: req.file.buffer,
 		},
 	});
