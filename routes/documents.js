@@ -196,7 +196,7 @@ router.patch("/:id", async (req, res) => {
 
 	document.indexingInfo = req.body.indexingInfo;
 	await document.save();
-	res.send(document);
+	res.status(200).send(document);
 });
 
 module.exports = router;

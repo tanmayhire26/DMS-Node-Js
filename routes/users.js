@@ -8,6 +8,11 @@ const { sendVerifyMail } = require("../emailBuilderVerify");
 const { Otp } = require("../models/otp");
 router.use(express.json());
 
+const multer = require("multer");
+const storage = multer.memoryStorage();
+
+const upload = multer({ storage: storage });
+
 router.get("/", async (req, res) => {
 	const users = await User.find();
 	if (!users) return res.status(404).send("No user registered yet!");
@@ -20,23 +25,6 @@ router.post("/filtered", async (req, res) => {
 	const searchQuery = req.body.searchQuery;
 	const departmentsArr = req.body.departmentsArr; //Array of objects
 	let usersOfDepartments = [];
-	//-------------trial of multiple options to filter from------
-	// if (departmentsArr) {
-	// 	for (let i = 0; i < allUsers.length; i++) {
-	// 		let userDeps = allUsers[i].departments;
-	// 		let counter = 0;
-
-	// 		userDeps.forEach((ud) => {
-	// 			let depMatch = departmentsArr.filter((d) => d._id === ud);
-	// 			if (depMatch.length !== 0) counter ++;
-	// 		});
-	// 		console.log(counter);
-	// 		if (counter !== 0) usersOfDepartments.push(allUsers[i]);
-	// 	}
-	// }
-	// if (usersOfDepartments.length !== 0) {
-	// 	return res.send(usersOfDepartments);
-	// }
 
 	//----------------------------Function for getting departments filter with search and filter by role : ------------------
 	function getFilteredByDep(fUsers) {
@@ -216,6 +204,26 @@ router.patch("/verify/:id", async (req, res) => {
 	await user.save();
 	res.send(user);
 });
+
+//--------------------------------------Change Profile Picture of Users-------------------------------------
+router.patch(
+	"/profileImage/:id",
+	upload.single("profileImage"),
+	async (req, res) => {
+		console.log(req.body.userId, req.file);
+		const userId = req.body.userId;
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).send("User not found");
+		
+		user.profileImage.originalname = req.file.originalname;
+		user.profileImage.mimetype = req.file.mimetype;
+		user.profileImage.data = req.file.buffer;
+		user.updatedAt = Date.now();
+		user.updatedBy = user._id;
+		await user.save();
+		res.send(user);
+	}
+);
 
 //----------------------------------------------------------------------------------------------------------------
 
