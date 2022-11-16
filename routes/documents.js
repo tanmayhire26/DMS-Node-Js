@@ -141,7 +141,7 @@ router.post("/", upload.single("documentImage"), async (req, res) => {
 	});
 
 	const path = req.file.filename;
-	
+
 	if (path) {
 		tanmay("./documentImages/" + path);
 	}
@@ -198,5 +198,21 @@ router.patch("/:id", async (req, res) => {
 	await document.save();
 	res.status(200).send(document);
 });
+
+//-----------------------------Patch DocumentImage-----------------------------------------------------
+router.patch(
+	"/documentImage/:id",
+	upload.single("documentImage"),
+	async (req, res) => {
+		const document = await Document.findById(req.body.documentId);
+
+		if (!document) return res.status(404).send("document no found");
+		document.documentImage.filename = req.file.filename;
+		document.documentImage.mimetype = req.file.mimetype;
+		document.documentImage.data = null;
+		await document.save();
+		res.send(document);
+	}
+);
 
 module.exports = router;
