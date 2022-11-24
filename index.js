@@ -3,6 +3,10 @@ const express = require("express");
 const app = express();
 
 //routes import
+// require("./startup/prod")(app);
+
+const m = require("./startup/prod");
+
 const users = require("./routes/users");
 const docTypes = require("./routes/docTypes");
 const fields = require("./routes/fields");
@@ -39,6 +43,7 @@ app.use("/api/comments", comments);
 app.use("/api/tags", tags);
 app.use("/api/tagNames", tagNames);
 app.use("/api/indexer", indexer);
+m(app);
 createAdmin();
 
 app.get("/", async (req, res) => {
